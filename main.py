@@ -30,15 +30,25 @@ def get_chatgpt_response(client, model, query):
 
 def main():
     client = get_open_ai_client()
-
-    prompt = "How are you doing today?"
-    print(f'Prompt:"{prompt}"')
-    query = prompt
-
-    outputs = get_chatgpt_response(client, conf.model, query)
-    for output in outputs:
-        print('-------------------')
-        print(output)
+    correct, incorrect = 0, 0
+    for question, answer in conf.questions_answers:
+        query = f'{conf.prompt}{question}'
+        print(f'QUESTION: "{question}"')
+        outputs = get_chatgpt_response(client, conf.model, query)
+        for i, output in enumerate(outputs):
+            print(f'ANSWER[{i}]: {output}')
+            print(f'Expected answer: {answer}')
+            if output.lower() == answer:
+                print('Correct!')
+                correct += 1
+            else:
+                print('Incorrect!')
+                incorrect += 1
+            print('-------------------')
+    print('')
+    print(f'Correct answers: {correct}')
+    print(f'Incorrect answers: {incorrect}')
+    print(f'Accuracy: {correct / (correct + incorrect) * 100:.2f}%')
 
 
 if __name__ == "__main__":
